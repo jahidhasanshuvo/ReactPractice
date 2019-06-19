@@ -1,15 +1,26 @@
 import React,{Component} from 'react'
 
-class Add extends Component{
+class Form extends Component{
 
     constructor(props){
         super(props)
         this.state={
-            id:this.props.student.id,
-            name:this.props.student.name,
-            edit:false,
+            id:"",
+            name:"",
+            edit:0
         }
         this.handleFieldChange = this.handleFieldChange.bind(this)
+        this.cancelForm = this.cancelForm.bind(this)
+    }
+    componentWillReceiveProps(nextProps){
+        if(nextProps.edit){
+            this.setState({
+                id:nextProps.currentStudent.id,
+                name:nextProps.currentStudent.name,
+                edit:nextProps.edit
+            })
+        }
+        console.log(nextProps)
     }
 
     handleFieldChange(event){
@@ -18,6 +29,7 @@ class Add extends Component{
         })
         // console.log(this.state.id,this.state.name)
     }
+
     submitForm(event){
         event.preventDefault()
         const student={
@@ -25,6 +37,21 @@ class Add extends Component{
             name:this.state.name
         }
         this.props.formSubmission(student)
+        this.setState({
+            id:"",
+            name:"",
+            edit:0,
+        })
+    }
+
+    cancelForm(event){
+        event.preventDefault()
+        this.props.cancelForm()
+        this.setState({
+            id:"",
+            name:"",
+            edit:0,
+        })
     }
     render(){
         return(
@@ -37,11 +64,13 @@ class Add extends Component{
                     <label htmlFor="inputPassword2" className="sr-only">Name</label>
                     <input type="text" className="form-control" name="name" placeholder="Name"  onChange={this.handleFieldChange} value={this.state.name}/>
                 </div>
-                <button type="submit" className="btn btn-primary mb-2">Add New Student</button>
+                {this.state.edit?"":<button type="submit" className="btn btn-success mb-2">Add New Student</button>}
+                {this.state.edit?<button type="submit" className="btn btn-primary mb-2">Update</button>:""}
+                {this.state.edit?<button type="reset" className="btn btn-danger mb-2" onClick={this.cancelForm}>Cancel</button>:""}
             </form>
         )
     }
 }
 
 
-export default Add
+export default Form
